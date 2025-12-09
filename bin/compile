@@ -72,12 +72,6 @@ set +e
 
 cd $BUILD_DIR
 
-if [ -n "$GITHUB_TOKEN" ]; then
-  echo "-----> Configuring git credentials for private repos"
-  git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
-  echo "-----> Git credentials configured"
-fi
-
 # download dependencies
 if [[ -f package.json && ! -f .skip-bun-install ]]
 then
@@ -106,4 +100,3 @@ then
   echo "Running Heroku postbuild script..."
   bun run heroku-postbuild
 fi
-
