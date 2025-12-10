@@ -104,6 +104,19 @@ EOF
   echo "-----> SSH configured successfully"
 fi
 
+echo "-----> Debug: Full package.json:"
+cat package.json
+
+echo ""
+echo "-----> Debug: bun.lock file:"
+if [[ -f bun.lock ]]; then
+  cat bun.lock
+else
+  echo "  (bun.lock does not exist)"
+fi
+
+echo ""
+
 # download dependencies
 if [[ -f package.json && ! -f .skip-bun-install ]]
 then
