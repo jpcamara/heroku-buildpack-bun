@@ -72,36 +72,12 @@ set +e
 
 cd $BUILD_DIR
 
-if [ -n "$GITHUB_SSH_KEY" ]; then
-  echo "-----> Setting up SSH for private repos"
-  mkdir -p ~/.ssh
-  chmod 700 ~/.ssh
-
-  # Decode and write SSH key
-  echo "$GITHUB_SSH_KEY" | base64 -d > ~/.ssh/id_ed25519
-  chmod 600 ~/.ssh/id_ed25519
-
-  # Add GitHub to known hosts
-  ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
-  chmod 644 ~/.ssh/known_hosts
-
-  # Configure SSH
-  cat > ~/.ssh/config << EOF
-Host github.com
-  IdentityFile ~/.ssh/id_ed25519
-  StrictHostKeyChecking no
-  IdentitiesOnly yes
-EOF
-  chmod 600 ~/.ssh/config
-
-  # Start SSH agent and add key
-  eval $(ssh-agent -s)
-  ssh-add ~/.ssh/id_ed25519
-
-  # Export GIT_SSH_COMMAND to ensure git uses SSH properly
-  export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o IdentitiesOnly=yes"
-
-  echo "-----> SSH configured successfully"
+# Configure git URL rewriting for GitHub token
+if [ -n "$GITHUB_TOKEN" ]; then
+  echo "-----> Configuring git URL rewriting with GITHUB_TOKEN"
+  git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+  git config --global url."https://${GITHUB_TOKEN}@api.github.com/".insteadOf "https://api.github.com/"
+  echo "-----> Git URL rewriting configured"
 fi
 
 echo "-----> Debug: Full package.json:"
